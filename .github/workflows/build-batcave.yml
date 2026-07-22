@@ -1,6 +1,9 @@
 name: Build BatCave Package
 
 on:
+  push:
+    branches:
+      - batcave-debug
   workflow_dispatch:
 
 jobs:
