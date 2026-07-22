@@ -1,0 +1,38 @@
+name: Build BatCave Package
+
+on:
+  push:
+    branches:
+      - batcave-debug
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install Aidoku CLI
+        run: |
+          cargo install --git https://github.com/Aidoku/aidoku-rs aidoku-cli
+
+      - name: Build BatCave
+        working-directory: sources/en.batcave
+        run: aidoku package
+
+      - name: Show generated files
+        run: find sources/en.batcave -type f -name "*.aix" -print
+
+      - name: Upload BatCave package
+        uses: actions/upload-artifact@v4
+        with:
+          name: batcave-aix
+          path: sources/en.batcave/package.aix
+          if-no-files-found: error
